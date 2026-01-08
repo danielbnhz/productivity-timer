@@ -7,8 +7,10 @@ from timer import Timer
 
 
 def main():
-    minutes = int(input("Enter the minutes you want to be productive for \n"))
-    Timer(minutes)
+    print("Running program \n")
+    while input("Initiate task counter? (answer y or n) \n") == "y":
+        minutes = int(input("Enter the minutes you want to be productive for \n"))
+        Timer(minutes)
 
 
 
