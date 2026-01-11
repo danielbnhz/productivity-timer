@@ -12,8 +12,9 @@ def main():
     logger.info("App started")
 
     print("Running program \n")
+    session_id = str(uuid.uuid4())
+
     while input("Initiate task counter? (y/n): ").strip().lower() == "y":
-        session_id = str(uuid.uuid4())
         logger.info(f"Session started: {session_id}")
 
         start = int(time.time())
