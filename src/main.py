@@ -12,13 +12,21 @@ def main():
     logger.info("App started")
 
     print("Running program \n")
-    while input("Initiate task counter? (answer y or n) \n") == "y":
+    while input("Initiate task counter? (y/n): ").strip().lower() == "y":
         session_id = str(uuid.uuid4())
         logger.info(f"Session started: {session_id}")
 
         start = int(time.time())
-        minutes = int(input("Enter the minutes you want to be productive for \n"))
-        Timer(minutes)
+        try:
+            minutes = int(input("Minutes: "))
+            if minutes <= 0:
+                raise ValueError
+        except ValueError:
+            print("Please enter a positive number")
+            continue
+
+        timer = Timer(minutes)
+        timer.start()
         end = int(time.time())
         log_session(session_id, start, end)
         duration = end - start 
