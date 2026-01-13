@@ -4,7 +4,7 @@ from logger import logger
 import uuid
 import time
 import utils
-
+import config
 init_db()
 
 
@@ -25,14 +25,23 @@ def main():
         except ValueError:
             print("Please enter a positive number")
             continue
+        try:
+            category = input("Please input task category: ")
+            if category not in config.CATEGORIES:
+                raise ValueError
+        except ValueError:
+            print("Please enter a valid category")
+            continue 
+
+
 
         timer = Timer(minutes)
         timer.start()
         end = utils.now_utc_ts()
         log_session(session_id, start, end)
         duration = end - start 
-        logger.info(f"Session saved: {session_id} ({duration}s)")
-        print(f"Session saved: {session_id} ({duration}s)")
+        logger.info(f"Session saved: {session_id} ({duration}s) in category: {category}")
+        print(f"Session saved: {session_id} for ({duration}s) in category: {category}")
 
 
 
