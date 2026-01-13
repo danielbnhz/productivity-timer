@@ -1,4 +1,6 @@
 import time
+import uuid
+
 from datetime import datetime, timezone
 
 def now_utc_ts() -> int:
