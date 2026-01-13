@@ -26,7 +26,7 @@ class Timer:
 
             # Print time above input line
             mins, secs = divmod(int(self.remaining), 60)
-            sys.stdout.write(f"\033[FTime left: {mins}:{secs:02d}  \n")
+            sys.stdout.write(f"\rTime left: {mins}:{secs:02d}   ")
             sys.stdout.flush()
 
             # Short sleep to make thread responsive
