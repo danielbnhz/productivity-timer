@@ -6,5 +6,6 @@ CATEGORIES = [
     "study",
     "exercise",
     "music",
-    "social"
+    "social",
+    "extracurricular"
 ]
