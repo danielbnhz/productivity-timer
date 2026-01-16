@@ -72,15 +72,15 @@ def get_all_sessions():
         return cursor.fetchall()
 
 
+
 def get_total_time_last_24h():
     """
-    Return total time in seconds for each category in the past 24 hours.
-    Returns a dictionary: {category_name: total_duration_in_seconds}
+    Return total time for each category in the past 24 hours,
+    including 'Total Productivity'.
+    Durations are returned as 'Hh Mm' strings for readability.
     """
-    # Calculate timestamp 24 hours ago
     now = datetime.utcnow()
-    past_24h = now - timedelta(hours=24)
-    past_24h_str = past_24h.strftime("%Y-%m-%d %H:%M:%S")  # matches SQLite CURRENT_TIMESTAMP format
+    past_24h_ts = int((now - timedelta(hours=24)).timestamp())  # UNIX timestamp for comparison
 
     with get_connection() as conn:
         cursor = conn.execute("""
@@ -89,8 +89,27 @@ def get_total_time_last_24h():
             JOIN categories c ON s.category_id = c.id
             WHERE s.created_at >= ?
             GROUP BY c.name
-        """, (past_24h_str,))
+        """, (past_24h_ts,))
         
-        # Convert result to dictionary
-        result = {row[0]: row[1] for row in cursor.fetchall() if row[1] is not None}
+        result = {}
+        total_seconds = 0
+
+        for row in cursor.fetchall():
+            category, duration_seconds = row
+            if not duration_seconds:
+                continue
+
+            # Convert string to int if needed
+            duration_seconds = int(duration_seconds)
+            total_seconds += duration_seconds
+
+            hours, remainder = divmod(duration_seconds, 3600)
+            minutes, _ = divmod(remainder, 60)
+            result[category] = f"{hours}h {minutes}m"
+
+        # Add total productivity
+        total_hours, remainder = divmod(total_seconds, 3600)
+        total_minutes, _ = divmod(remainder, 60)
+        result['Total Productivity'] = f"{total_hours}h {total_minutes}m"
+
         return result

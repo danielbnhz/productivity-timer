@@ -1,5 +1,4 @@
 from timer import Timer
-from storage import init_db, log_session
 from logger import logger
 import utils
 import config
@@ -7,9 +6,9 @@ import threading
 import msvcrt
 import time
 import sys
-
+import storage
 # Initialize database
-init_db()
+storage.init_db()
 
 
 def keyboard_listener(timer):
@@ -86,7 +85,7 @@ def start_productivity_session():
     end = utils.now_utc_ts()
 
     # Log session
-    log_session(session_id, start, end, category)
+    storage.log_session(session_id, start, end, category)
     duration = end - start
     logger.info(f"Session saved: {session_id} ({duration}s) in category: {category}")
     print(f"Session saved: {session_id} for ({duration}s) in category: {category}\n")
@@ -94,16 +93,51 @@ def start_productivity_session():
 
 
 def menu_loop():
-    """Main interactive menu for running multiple sessions."""
-    print("Running program\n")
-    run_sessions = True
-    while run_sessions:
-        start_task = input("Start task? (y/n): ").strip().lower()
-        if start_task != "y":
-            run_sessions = False
-            continue
-        start_productivity_session()
+    """Main interactive menu for running multiple sessions or querying the database."""
+    print("Welcome! Choose an option:\n")
 
+    while True:
+        print("\nMain Menu:")
+        print("1. Task Timer")
+        print("2. Database Queries")
+        print("q. Quit")
+
+        choice = input("Select an option: ").strip().lower()
+
+        if choice == "1":
+            # Enter the existing task timer loop
+            start_productivity_session()
+        elif choice == "2":
+            database_menu()
+        elif choice == "q":
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+
+def database_menu():
+    """Submenu for database operations."""
+    while True:
+        print("\nDatabase Menu:")
+        print("1. Show total time per category in the past 24 hours")
+        print("b. Back to main menu")
+
+        choice = input("Select an option: ").strip().lower()
+
+        if choice == "1":
+            totals = storage.get_total_time_last_24h()
+            if totals:
+                print("\nPast 24 hours:")
+                for category, duration in totals.items():
+                    # Duration is already formatted as "Hh Mm"
+                    print(f"  {category}: {duration}")
+            else:
+                print("No sessions logged in the past 24 hours.")
+        elif choice == "b":
+            break
+        else:
+            print("Invalid choice, please try again.")
 
 def main():
     logger.info("App started")
