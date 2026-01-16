@@ -13,16 +13,19 @@ class Timer:
         last_tick = time.monotonic()
 
         while not self.finished:
+            now = time.monotonic()
             with self._lock:
                 if not self.paused:
-                    now = time.monotonic()
+                    # Only subtract elapsed time when running
                     delta = now - last_tick
-                    last_tick = now
                     self.remaining -= delta
 
                     if self.remaining <= 0:
                         self.remaining = 0
                         self.finished = True
+
+                # Always update last_tick, even if paused
+                last_tick = now
 
             # Print time above input line
             mins, secs = divmod(int(self.remaining), 60)
