@@ -80,7 +80,8 @@ def get_total_time_last_24h():
     Durations are returned as 'Hh Mm' strings for readability.
     """
     now = datetime.utcnow()
-    past_24h_ts = int((now - timedelta(hours=24)).timestamp())  # UNIX timestamp for comparison
+    past_24h_dt = now - timedelta(hours=24)         # datetime object
+    past_24h_str = past_24h_dt.strftime("%Y-%m-%d %H:%M:%S")  # string for SQL
 
     with get_connection() as conn:
         cursor = conn.execute("""
@@ -89,7 +90,7 @@ def get_total_time_last_24h():
             JOIN categories c ON s.category_id = c.id
             WHERE s.created_at >= ?
             GROUP BY c.name
-        """, (past_24h_ts,))
+        """, (past_24h_str,))
         
         result = {}
         total_seconds = 0
