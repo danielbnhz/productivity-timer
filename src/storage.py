@@ -73,15 +73,19 @@ def get_all_sessions():
 
 
 
-def get_total_time_last_24h():
-    """
-    Return total time for each category in the past 24 hours,
-    including 'Total Productivity'.
-    Durations are returned as 'Hh Mm' strings for readability.
-    """
-    now = datetime.utcnow()
-    past_24h_dt = now - timedelta(hours=24)         # datetime object
-    past_24h_str = past_24h_dt.strftime("%Y-%m-%d %H:%M:%S")  # string for SQL
+def get_productive_time(period="day"):
+    if period == "day":
+        delta = timedelta(days=1)
+        label = "Past 24 hours"
+    elif period == "week":
+        delta = timedelta(days=7)
+        label = "Past 7 days"
+    else:
+        raise ValueError("Unsupported period")
+    
+    now = datetime.utcnow()              # current UTC time
+    cutoff_dt = now - delta               # datetime object 24h or 7d ago
+    cutoff_str = cutoff_dt.strftime("%Y-%m-%d %H:%M:%S")
 
     with get_connection() as conn:
         cursor = conn.execute("""
@@ -90,7 +94,7 @@ def get_total_time_last_24h():
             JOIN categories c ON s.category_id = c.id
             WHERE s.created_at >= ?
             GROUP BY c.name
-        """, (past_24h_str,))
+        """, (cutoff_str,))
         
         result = {}
         total_seconds = 0
@@ -113,4 +117,4 @@ def get_total_time_last_24h():
         total_minutes, _ = divmod(remainder, 60)
         result['Total Productivity'] = f"{total_hours}h {total_minutes}m"
 
-        return result
+        return result, label

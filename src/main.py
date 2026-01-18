@@ -121,23 +121,29 @@ def database_menu():
     while True:
         print("\nDatabase Menu:")
         print("1. Show total time per category in the past 24 hours")
+        print("2. Show total time per category in the past 7 days")
         print("b. Back to main menu")
 
         choice = input("Select an option: ").strip().lower()
 
         if choice == "1":
-            totals = storage.get_total_time_last_24h()
-            if totals:
-                print("\nPast 24 hours:")
-                for category, duration in totals.items():
-                    # Duration is already formatted as "Hh Mm"
-                    print(f"  {category}: {duration}")
-            else:
-                print("No sessions logged in the past 24 hours.")
+            period = "day"
+        elif choice == "2":
+            period = "week"
         elif choice == "b":
             break
         else:
             print("Invalid choice, please try again.")
+            continue
+
+        totals, label = storage.get_productive_time(period)
+
+        if totals:
+            print(f"\n{label}:")
+            for category, duration in totals.items():
+                print(f"  {category}: {duration}")
+        else:
+            print(f"No sessions logged in the {label.lower()}.")
 
 def main():
     logger.info("App started")
