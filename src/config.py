@@ -8,5 +8,6 @@ CATEGORIES = [
     "music",
     "social",
     "extracurricular",
-    "work/job-apps"
+    "work/job-apps",
+    "cleaning"
 ]
