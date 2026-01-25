@@ -122,6 +122,7 @@ def database_menu():
         print("\nDatabase Menu:")
         print("1. Show total time per category in the past 24 hours")
         print("2. Show total time per category in the past 7 days")
+        print("3. Show total time per category in the past month")
         print("b. Back to main menu")
 
         choice = input("Select an option: ").strip().lower()
@@ -130,6 +131,8 @@ def database_menu():
             period = "day"
         elif choice == "2":
             period = "week"
+        elif choice == "3":
+            period = "month"
         elif choice == "b":
             break
         else:

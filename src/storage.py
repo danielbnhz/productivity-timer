@@ -80,6 +80,9 @@ def get_productive_time(period="day"):
     elif period == "week":
         delta = timedelta(days=7)
         label = "Past 7 days"
+    elif period == "month":
+        delta = timedelta(days=30)
+        label = "Past month"
     else:
         raise ValueError("Unsupported period")
     
